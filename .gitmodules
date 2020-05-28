@@ -1,0 +1,3 @@
+[submodule "_lib/arduinoUbiquitous"]
+	path = _lib/arduinoUbiquitous
+	url = git@github.com:mirage335/arduinoUbiquitous.git
