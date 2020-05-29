@@ -11,7 +11,7 @@ export ubVirtImageLocal="false"
 
 # # ATTENTION: Add to ops!
 _refresh_anchors_arduino_rewrite() {
-	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_arduino_rewrite
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_rewrite_arduinoide
 }
 
 
