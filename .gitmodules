@@ -1,3 +1,6 @@
 [submodule "_lib/arduinoUbiquitous"]
 	path = _lib/arduinoUbiquitous
 	url = git@github.com:mirage335/arduinoUbiquitous.git
+[submodule "_lib/Marlin-TazStiff"]
+	path = _lib/Marlin-TazStiff
+	url = git@github.com:mirage335/zOBSOLETE-Marlin-TazStiff.git
