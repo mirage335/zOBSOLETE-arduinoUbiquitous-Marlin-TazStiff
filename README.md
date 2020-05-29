@@ -8,6 +8,24 @@ Contains all dependencies, including binaries and libraries, to a single directo
 
 Arduino has become a common component of larger industrial systems, most notably 3D printer controllers.
 
+# Fork
+Forked from the "arduinoUbiquitous" project. Specifically provides libraries to compile the OBSOLETE legacy firmware available under "_lib/Marlin-TazStiff" and adapted under "_lib/_examples/Marlin-TazStiff/Marlin" .
+
+# Fork - Certification
+
+## -
+
+* ./compile.sh ; ./_arduino_arduinoide_user ./_lib/_examples/Marlin-TazStiff/Marlin/Marlin.ino
+
+* ./compile.sh ; ./_arduino_compile ./_lib/_examples/Marlin-TazStiff/Marlin/Marlin.ino
+
+* ./compile.sh ; ./_arduino_upload ./_lib/_examples/Marlin-TazStiff/Marlin/Marlin.ino
+
+# Fork - Reference
+https://reprap.org/forum/read.php?146,691608
+
+
+
 # Usage
 From terminal, launch "_arduino" with existing sketch directory as a parameter.
 
