@@ -23,3 +23,20 @@ _rewrite_arduinoide() {
 	find . -maxdepth 1 -type f -name "*SdBaseFile.cpp" -exec sed -i 's/fpos_t/fpos_t1/g' {} \;
 }
 
+
+
+
+_task_upload_legacy() {
+	_messagePlain_nominal 'Upload.'
+	
+	export au_arduinoFirmware_hex="$scriptLib"/Marlin-TazStiff/binary/Marlin.ino.hex
+	
+	! _check_arduino_firmware_hex && _messagePlain_bad 'fail: missing: binary' && return 1
+	
+	_arduino_upload_serial_avrdude_mega2560
+}
+
+
+_refresh_anchors_task() {
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_task_upload_legacy
+}
