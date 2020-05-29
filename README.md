@@ -13,7 +13,7 @@ Forked from the "arduinoUbiquitous" project. Specifically provides libraries to 
 
 # Fork - Certification
 
-## -
+## d2918206df792b4b0dd6595e3853a1b8a51b7968
 
 * ./compile.sh ; ./_arduino_arduinoide_user ./_lib/_examples/Marlin-TazStiff/Marlin/Marlin.ino
 
