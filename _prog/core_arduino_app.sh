@@ -1,7 +1,7 @@
 
 # WARNING: Ignores all sketch ops. Intended for manual IDE configuration management and testing.
 # Prefer _scope .
-_arduino_arduinoide_user() {
+_arduino_arduinoide_user_sequence() {
 	_start
 	
 	if ! _set_arduino_var "$@"
@@ -12,6 +12,8 @@ _arduino_arduinoide_user() {
 	
 	_import_ops_arduino_sketch
 	_ops_arduino_sketch
+	
+	[[ "$au_arduinoide_noboard" != 'true' ]] && _prepare_arduino_board
 	
 	#_set_arduino_editShortHome
 	_set_arduino_userShortHome
@@ -30,10 +32,13 @@ _arduino_arduinoide_user() {
 	
 	_stop
 }
+_arduino_arduinoide_user() {
+	"$scriptAbsoluteLocation" _arduino_arduinoide_user_sequence "$@"
+}
 
 # WARNING: Ignores all sketch ops. Intended for manual IDE configuration management and testing.
 # Prefer _scope .
-_arduino_arduinoide_edit() {
+_arduino_arduinoide_edit_sequence() {
 	_start
 	
 	if ! _set_arduino_var "$@"
@@ -44,6 +49,8 @@ _arduino_arduinoide_edit() {
 	
 	_import_ops_arduino_sketch
 	_ops_arduino_sketch
+	
+	[[ "$au_arduinoide_noboard" != 'true' ]] && _prepare_arduino_board
 	
 	_set_arduino_editShortHome
 	#_set_arduino_userShortHome
@@ -61,6 +68,9 @@ _arduino_arduinoide_edit() {
 	#_arduino_deconfigure_procedure "$au_arduinoDir"/portable/preferences.txt
 	
 	_stop
+}
+_arduino_arduinoide_edit() {
+	"$scriptAbsoluteLocation" _arduino_arduinoide_edit_sequence "$@"
 }
 
 # WARNING: Ignores all sketch ops. Intended for manual IDE configuration management and testing.
@@ -68,7 +78,7 @@ _arduino_arduinoide_edit() {
 #config, assumes portable directories have been setup
 # WARNING: No production use.
 # DANGER: May be obsolete and broken.
-_arduino_arduinoide_config() {
+_arduino_arduinoide_config_sequence() {
 	_start
 	
 	if ! _set_arduino_var "$@"
@@ -79,6 +89,8 @@ _arduino_arduinoide_config() {
 	
 	_import_ops_arduino_sketch
 	_ops_arduino_sketch
+	
+	[[ "$au_arduinoide_noboard" != 'true' ]] && _prepare_arduino_board
 	
 	_set_arduino_editShortHome
 	#_set_arduino_userShortHome
@@ -96,6 +108,9 @@ _arduino_arduinoide_config() {
 	_arduino_deconfigure_procedure "$au_arduinoDir"/portable/preferences.txt
 	
 	_stop
+}
+_arduino_arduinoide_config() {
+	"$scriptAbsoluteLocation"  _arduino_arduinoide_config_sequence "$@"
 }
 
 

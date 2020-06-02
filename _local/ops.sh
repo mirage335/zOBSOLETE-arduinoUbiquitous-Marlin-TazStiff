@@ -2,12 +2,18 @@
 
 # WARNING: Board type may not be correctly set in arduinoide .
 # WARNING: May not be appropriate for all relevant projects. Intended as sane defaults ONLY.
+# DANGER: Overrides sketch 'ops' !
 _declare_arduino_device_mega2560
 _declare_arduino_installation_1.8.5
 
 
 #Enable search if "vm.img" and related files are missing.
 export ubVirtImageLocal="false"
+
+export ub_anchor_autoupgrade="true"
+
+export ub_anchor_specificSoftwareName="zOBSOLETE-Marlin-TazStiff"
+export ub_anchor_user="true"
 
 # # ATTENTION: Add to ops!
 _refresh_anchors_arduino_rewrite() {

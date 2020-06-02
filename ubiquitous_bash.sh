@@ -12462,6 +12462,89 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_false.bat
 }
 
+# EXAMPLE ONLY.
+# _refresh_anchors() {
+# 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_true
+# }
+
+
+# CAUTION: Anchor scripts MUST include code to ignore '--' suffix specific software name convention!
+# CAUTION: ONLY intended to be used either with generic software, or anchors following '--' suffix specific software name convention!
+# WARNING: DO NOT enable in "core.sh". Intended to be enabled by "_local/ops.sh".
+# ATTENTION: Set "$ub_anchor_specificSoftwareName" or similar in "ops.sh".
+# ATTENTION: Set ub_anchor_user='true' or similar in "ops.sh".
+#export ub_anchor_specificSoftwareName='experimental'
+#export ub_anchor_user="true"
+_set_refresh_anchors_specific() {
+	export ub_anchor_suffix=
+	export ub_anchor_suffix
+	
+	[[ "$ub_anchor_specificSoftwareName" == "" ]] && return 0
+	
+	export ub_anchor_suffix='--'"$ub_anchor_specificSoftwareName"
+	
+	return 0
+}
+
+_refresh_anchors_specific_single_procedure() {
+	[[ "$ub_anchor_specificSoftwareName" == "" ]] && return 1
+	
+	_set_refresh_anchors_specific
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix"
+	
+	return 0
+}
+# Assumes user has included "$HOME"/bin in their "$PATH".
+_refresh_anchors_user_single_procedure() {
+	[[ "$ub_anchor_user" != 'true' ]] && return 1
+	
+	_set_refresh_anchors_specific
+	! mkdir -p "$HOME"/bin && return 1
+	
+	
+	# WARNING: Default to replacement. Rare case considered acceptable for several reasons.
+	# Negligible damage potential - all replaced files are symlinks or anchors.
+	# Limited to specifically named anchor symlinks, defined in "_associate_anchors_request", typically overloaded with 'core.sh' or similar.
+	# Usually requested 'manually' through "_setup" or "_anchor", even if called through a multi-installation request.
+	# Incorrectly calling a moved, uninstalled, or otherwise incorrect previous version, of linked software, is anticipated to be a more commonly impose greater risk.
+	#ln -s "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/ > /dev/null 2>&1
+	ln -sf "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/
+	
+	return 0
+}
+
+# ATTENTION: Overload with 'core.sh' or similar.
+# # EXAMPLE ONLY.
+# _refresh_anchors_specific() {
+# 	_refresh_anchors_specific_single_procedure _true
+# }
+# # EXAMPLE ONLY.
+# _refresh_anchors_user() {
+# 	_refresh_anchors_user_single_procedure _true
+# }
+
+
+# ATTENTION: Overload with 'core'sh' or similar.
+# _associate_anchors_request() {
+# 	if type "_refresh_anchors_user" > /dev/null 2>&1
+# 	then
+# 		_tryExec "_refresh_anchors_user"
+# 		#return
+# 	fi
+# 	
+# 	_messagePlain_request 'association: dir'
+# 	echo _scope_konsole"$ub_anchor_suffix"
+# 	
+# 	_messagePlain_request 'association: dir'
+# 	echo _scope_designer_designeride"$ub_anchor_suffix"
+# 	
+# 	_messagePlain_request 'association: dir, *.ino'
+# 	echo _designer_generate"$ub_anchor_suffix"
+# }
+
+
+
 # ATTENTION: Overload with 'core.sh' or similar.
 # WARNING: May become default behavior.
 _anchor_autoupgrade() {
@@ -12469,16 +12552,16 @@ _anchor_autoupgrade() {
 	currentScriptBaseName=$(basename $scriptAbsoluteLocation)
 	[[ "$currentScriptBaseName" != "ubiquitous_bash.sh" ]] && return 1
 	
-	true
-	#[[ -e "$scriptLib"/ubiquitous_bash/_anchor ]] && cp -a "$scriptLib"/ubiquitous_bash/_anchor "$scriptAbsoluteFolder"/_anchor
+	[[ "$ub_anchor_autoupgrade" != 'true' ]] && return 0
+	
+	_findUbiquitous
+	
+	[[ -e "$ubiquitiousLibDir"/_anchor ]] && cp -a "$ubiquitiousLibDir"/_anchor "$scriptAbsoluteFolder"/_anchor
 }
 
 _anchor_configure() {
 	export ubAnchorTemplateCurrent="$scriptAbsoluteFolder"/_anchor
 	[[ "$1" != "" ]] && export ubAnchorTemplateCurrent="$1"
-	
-	
-	_anchor_autoupgrade
 	
 	! [[ -e "$ubAnchorTemplateCurrent" ]] && return 1
 	
@@ -12502,6 +12585,8 @@ _anchor_configure() {
 }
 
 _anchor() {
+	_anchor_autoupgrade
+	
 	_anchor_configure
 	_anchor_configure "$scriptAbsoluteFolder"/_anchor.bat
 	
@@ -12512,8 +12597,31 @@ _anchor() {
 	if type "_refresh_anchors" > /dev/null 2>&1
 	then
 		_tryExec "_refresh_anchors"
-		return
+		#return
 	fi
+	
+	# CAUTION: Anchor scripts MUST include code to ignore '--' suffix specific software name convention!
+	# WARNING: DO NOT enable in "core.sh". Intended to be enabled by "_local/ops.sh".
+	if type "_refresh_anchors_specific" > /dev/null 2>&1
+	then
+		_tryExec "_refresh_anchors_specific"
+		#return
+	fi
+	
+	# CAUTION: ONLY intended to be used either with generic software, or anchors following '--' suffix specific software name convention!
+	# WARNING: DO NOT enable in "core.sh". Intended to be enabled by "_local/ops.sh".
+	if type "_refresh_anchors_user" > /dev/null 2>&1
+	then
+		_tryExec "_refresh_anchors_user"
+		#return
+	fi
+	
+	# WARNING: Calls _refresh_anchors_user . Same variables required to enable, intended to be set by "_local/ops.sh".
+	#if type "_associate_anchors_request" > /dev/null 2>&1
+	#then
+		#_tryExec "_associate_anchors_request"
+		##return
+	#fi
 	
 	return 0
 }
@@ -13020,6 +13128,18 @@ export globalArcTmp="$globalArcDir"/tmp
 export globalBuildDir="$scriptLocal"/b
 export globalBuildFS="$globalBuildDir"/fs
 export globalBuildTmp="$globalBuildDir"/tmp
+
+
+export ub_anchor_specificSoftwareName=""
+export ub_anchor_specificSoftwareName
+
+export ub_anchor_user=""
+export ub_anchor_user
+
+export ub_anchor_autoupgrade=""
+export ub_anchor_autoupgrade
+
+
 
 #Machine information.
 
@@ -16314,6 +16434,15 @@ _setupCommands() {
 #	true
 #}
 
+
+_setup_anchor() {
+	if type "_associate_anchors_request" > /dev/null 2>&1
+	then
+		_tryExec "_associate_anchors_request"
+		return
+	fi
+}
+
 _setup() {
 	_start
 	
@@ -16339,6 +16468,8 @@ _setup() {
 	_tryExec "_setup_ssh"
 	
 	_tryExec "_setup_prog"
+	
+	_setup_anchor
 	
 	_stop
 }
@@ -16501,6 +16632,19 @@ _package_prog() {
 
 
 
+
+_refresh_anchors_specific() {
+	#_refresh_anchors_specific_single_procedure _true
+	
+	_refresh_anchors_specific_arduino
+}
+
+_refresh_anchors_user() {
+	#_refresh_anchors_user_single_procedure _true
+	
+	_refresh_anchors_user_arduino
+}
+
 #duplicate _anchor
 _refresh_anchors() {
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_scope
@@ -16521,7 +16665,7 @@ _refresh_anchors() {
 
 #Typically launches an application - ie. through virtualized container.
 _launch() {
-	_arduino "$@"
+	_false "$@"
 }
 
 #Typically gathers command/variable scripts from other (ie. yaml) file types (ie. AppImage recipes).
@@ -16986,6 +17130,61 @@ _refresh_anchors_arduino() {
 }
 
 
+_refresh_anchors_specific_arduino() {
+	_refresh_anchors_specific_single_procedure _scope_konsole
+	
+	_refresh_anchors_specific_single_procedure _scope_arduino_arduinoide
+	
+	_refresh_anchors_specific_single_procedure _arduino_compile
+	_refresh_anchors_specific_single_procedure _arduino_upload
+	_refresh_anchors_specific_single_procedure _arduino_debug_ddd
+	
+	_refresh_anchors_specific_single_procedure _arduino_bootloader
+}
+
+_refresh_anchors_user_arduino() {
+	_refresh_anchors_user_single_procedure _scope_konsole
+	
+	_refresh_anchors_user_single_procedure _scope_arduino_arduinoide
+	
+	_refresh_anchors_user_single_procedure _arduino_compile
+	_refresh_anchors_user_single_procedure _arduino_upload
+	_refresh_anchors_user_single_procedure _arduino_debug_ddd
+	
+	#_refresh_anchors_user_single_procedure _arduino_bootloader
+}
+
+_associate_anchors_request() {
+	if type "_refresh_anchors_user" > /dev/null 2>&1
+	then
+		_tryExec "_refresh_anchors_user"
+		#return
+	fi
+	
+	_messagePlain_request 'association: dir'
+	echo _scope_konsole"$ub_anchor_suffix"
+	
+	_messagePlain_request 'association: dir'
+	echo _scope_arduino_arduinoide"$ub_anchor_suffix"
+	
+	
+	_messagePlain_request 'association: dir, *.ino'
+	echo _arduino_compile"$ub_anchor_suffix"
+	
+	_messagePlain_request 'association: dir, *.ino'
+	echo _arduino_upload"$ub_anchor_suffix"
+	
+	_messagePlain_request 'association: dir, *.ino'
+	echo _arduino_debug_ddd"$ub_anchor_suffix"
+}
+
+
+
+
+
+
+
+
 
 _declare_scope_arduino() {
 
@@ -17043,6 +17242,8 @@ CZXWXcRMTo8EmM8i4d
 		
 		_messagePlain_nominal '_scope_attach: prog: deploy'
 		
+		_scope_command_write _prepare_arduino_board
+		
 		_scope_command_write _scope_arduino
 		_scope_command_write _scope_arduino_arduinoide
 		
@@ -17083,7 +17284,7 @@ _scope_arduino() {
 
 # WARNING: Ignores all sketch ops. Intended for manual IDE configuration management and testing.
 # Prefer _scope .
-_arduino_arduinoide_user() {
+_arduino_arduinoide_user_sequence() {
 	_start
 	
 	if ! _set_arduino_var "$@"
@@ -17094,6 +17295,8 @@ _arduino_arduinoide_user() {
 	
 	_import_ops_arduino_sketch
 	_ops_arduino_sketch
+	
+	[[ "$au_arduinoide_noboard" != 'true' ]] && _prepare_arduino_board
 	
 	#_set_arduino_editShortHome
 	_set_arduino_userShortHome
@@ -17112,10 +17315,13 @@ _arduino_arduinoide_user() {
 	
 	_stop
 }
+_arduino_arduinoide_user() {
+	"$scriptAbsoluteLocation" _arduino_arduinoide_user_sequence "$@"
+}
 
 # WARNING: Ignores all sketch ops. Intended for manual IDE configuration management and testing.
 # Prefer _scope .
-_arduino_arduinoide_edit() {
+_arduino_arduinoide_edit_sequence() {
 	_start
 	
 	if ! _set_arduino_var "$@"
@@ -17126,6 +17332,8 @@ _arduino_arduinoide_edit() {
 	
 	_import_ops_arduino_sketch
 	_ops_arduino_sketch
+	
+	[[ "$au_arduinoide_noboard" != 'true' ]] && _prepare_arduino_board
 	
 	_set_arduino_editShortHome
 	#_set_arduino_userShortHome
@@ -17143,6 +17351,9 @@ _arduino_arduinoide_edit() {
 	#_arduino_deconfigure_procedure "$au_arduinoDir"/portable/preferences.txt
 	
 	_stop
+}
+_arduino_arduinoide_edit() {
+	"$scriptAbsoluteLocation" _arduino_arduinoide_edit_sequence "$@"
 }
 
 # WARNING: Ignores all sketch ops. Intended for manual IDE configuration management and testing.
@@ -17150,7 +17361,7 @@ _arduino_arduinoide_edit() {
 #config, assumes portable directories have been setup
 # WARNING: No production use.
 # DANGER: May be obsolete and broken.
-_arduino_arduinoide_config() {
+_arduino_arduinoide_config_sequence() {
 	_start
 	
 	if ! _set_arduino_var "$@"
@@ -17161,6 +17372,8 @@ _arduino_arduinoide_config() {
 	
 	_import_ops_arduino_sketch
 	_ops_arduino_sketch
+	
+	[[ "$au_arduinoide_noboard" != 'true' ]] && _prepare_arduino_board
 	
 	_set_arduino_editShortHome
 	#_set_arduino_userShortHome
@@ -17178,6 +17391,9 @@ _arduino_arduinoide_config() {
 	_arduino_deconfigure_procedure "$au_arduinoDir"/portable/preferences.txt
 	
 	_stop
+}
+_arduino_arduinoide_config() {
+	"$scriptAbsoluteLocation"  _arduino_arduinoide_config_sequence "$@"
 }
 
 
@@ -18295,7 +18511,11 @@ _setup_prog_arduino() {
 	
 	#cat << 'CZXWXcRMTo8EmM8i4d' | sudo tee "$1"'/etc/udev/rules.d/49-teensy-'"$ubiquitiousBashIDshort"'.rules' > /dev/null
 #CZXWXcRMTo8EmM8i4d
-	sudo -n cp "$scriptLib"/udev_teensy-rules/49-teensy.rules /etc/udev/rules.d/
+	sudo -n cp "$scriptLib"/udev_teensy-rules/49-teensy.rules /etc/udev/rules.d/ > /dev/null 2>&1
+	sudo -n cp "$scriptLib"/arduinoUbiquitous/_lib/udev_teensy-rules/49-teensy.rules /etc/udev/rules.d/ > /dev/null 2>&1
+	
+	! [[ -e /etc/udev/rules.d/49-teensy.rules ]] && _messagePlain_warn 'write: udev: missing'
+	
 	#_messagePlain_good 'write: udev: complete'
 	
 	
